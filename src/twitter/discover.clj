@@ -79,21 +79,22 @@
   "/status/"
   (-> tweet :id)))
 
-(defn tweet-table
+(defn tweet-report
  [tweets]
  (let [row-fn (fn [tweet]
                (-> tweet
-                (select-keys [:retweet_count
-                              :favorite_count
-                              :user
-                              :text])
-                (update :user :screen_name)
+                (select-keys [:text :retweet_count :favorite_count])
                 (update :text cuerdas.core/clean)
                 (assoc :url (tweet->url tweet))))
        ; putting the highest at the bottom actually makes it easier to read at
        ; the REPL
        sort-fn (partial sort-by :retweet_count)]
-  (clojure.pprint/print-table
+  (clojure.pprint/pprint
    (map
     row-fn
     (sort-fn tweets)))))
+
+(defn user-report!
+ [username]
+ (tweet-report
+  (user->interesting-tweets! username 1)))
