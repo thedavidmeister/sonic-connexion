@@ -42,10 +42,12 @@
 
 (defn with-defaults
  [params]
- (update-in
+ (update
   params
-  [:query-params :count]
-  #(or % 100)))
+  :query-params
+  #(merge
+    {:count 100}
+    %)))
 
 (defn -search!
  ([q] (-search! q nil))
