@@ -1,7 +1,6 @@
 (ns twitter.discover
  (:require
   twitter.api
-  twitter.tweet
   cuerdas.core
   medley.core))
 
