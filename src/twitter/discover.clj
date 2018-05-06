@@ -86,6 +86,7 @@
                (-> tweet
                 (select-keys [:text :retweet_count :favorite_count])
                 (update :text cuerdas.core/clean)
+                (assoc :hashtags (tweet->hashtags tweet))
                 (assoc :url (tweet->url tweet))))
        ; putting the highest at the bottom actually makes it easier to read at
        ; the REPL
