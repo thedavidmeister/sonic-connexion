@@ -8,6 +8,16 @@
   environ.core
   [clojure.spec.alpha :as spec]))
 
+(defn check-200-status
+ [response]
+ (when-not (= 200 (:status response))
+  (taoensso.timbre/error (:status response) (:body response))))
+
+(defn parse-body
+ [response]
+ (check-200-status response)
+ (cheshire.core/parse-string (:body response) true))
+
 (defn -fetch-token!
  ([]
   (-fetch-token!
@@ -19,9 +29,24 @@
                    twitter.data/token-url
                    {:basic-auth [client-key client-secret]
                     :form-params {"grant_type" "client_credentials"}})]
-   (if (= 200 (:status response))
-    (cheshire.core/parse-string
-     (:body response)
-     true)
-    (taoensso.timbre/error (:status response) (:body response))))))
+   (parse-body response))))
 (def fetch-token! (memoize -fetch-token!))
+
+(defn with-auth!
+ [params]
+ (let [token (fetch-token!)]
+  (assoc-in
+   params
+   [:headers "Authorization"]
+   (str (:token_type token) " " (:access_token token)))))
+
+(defn -search!
+ ([q] (-search! q nil))
+ ([q params]
+  (let [response @(org.httpkit.client/get
+                   "https://api.twitter.com/1.1/search/tweets.json"
+                   (-> params
+                    (assoc-in [:query-params :q] q)
+                    with-auth!))]
+   (parse-body response))))
+(def search! (memoize -search!))
