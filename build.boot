@@ -3,7 +3,9 @@
  '[
    [org.clojure/clojure "1.10.0-alpha4"]
    [samestep/boot-refresh "0.1.0-20160620.111804-1"]
-   [http-kit "2.3.0"]]
+   [http-kit "2.3.0"]
+   [cheshire "5.8.0"]
+   [com.taoensso/timbre "4.10.0"]]
 
  :source-paths   #{"src"})
 
