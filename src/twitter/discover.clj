@@ -1,7 +1,8 @@
 (ns twitter.discover
  (:require
   twitter.api
-  twitter.tweet))
+  twitter.tweet
+  cuerdas.core))
 
 (defn q->tweets!
  [q]
@@ -54,12 +55,45 @@
     #(str % username)
     ["from:" "to:" "@"]))))
 
-(defn user->tweets!
+(defn user->interesting-tweets!
  [username depth]
  (let [hs (hashtags-for-user! username)
        hs' (hashtags-for-hashtags! hs depth)
+       ; remove any hashtags that only appear once
        multiples-only
        (remove
         #(= 1 (val %))
-        (frequencies hs'))]
-  (pmap hashtag->tweets! (map key multiples-only))))
+        (frequencies hs'))
+       tweets (flatten (pmap hashtag->tweets! (map key multiples-only)))
+       favourites (partial remove (comp zero? :favorite_count))
+       retweets (partial remove (comp zero? :retweet_count))]
+  (->> tweets
+   favourites
+   retweets)))
+
+(defn tweet->url
+ [tweet]
+ (str
+  "https://twitter.com/"
+  (-> tweet :user :screen_name)
+  "/status/"
+  (-> tweet :id)))
+
+(defn tweet-table
+ [tweets]
+ (let [row-fn (fn [tweet]
+               (-> tweet
+                (select-keys [:retweet_count
+                              :favorite_count
+                              :user
+                              :text])
+                (update :user :screen_name)
+                (update :text cuerdas.core/clean)
+                (assoc :url (tweet->url tweet))))
+       ; putting the highest at the bottom actually makes it easier to read at
+       ; the REPL
+       sort-fn (partial sort-by :retweet_count)]
+  (clojure.pprint/print-table
+   (map
+    row-fn
+    (sort-fn tweets)))))

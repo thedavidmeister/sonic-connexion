@@ -6,7 +6,8 @@
    [http-kit "2.3.0"]
    [cheshire "5.8.0"]
    [com.taoensso/timbre "4.10.0"]
-   [environ "1.1.0"]]
+   [environ "1.1.0"]
+   [funcool/cuerdas "2.0.5"]]
 
  :source-paths   #{"src"})
 
