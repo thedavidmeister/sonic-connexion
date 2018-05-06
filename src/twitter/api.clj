@@ -56,5 +56,6 @@
                     (assoc-in [:query-params :q] q)
                     with-auth!
                     with-defaults))]
+   (taoensso.timbre/debug "Rate limit remaining:" (-> response :headers :x-rate-limit-remaining))
    (parse-body response))))
 (def search! (memoize -search!))
