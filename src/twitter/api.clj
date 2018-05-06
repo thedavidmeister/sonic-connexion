@@ -40,6 +40,13 @@
    [:headers "Authorization"]
    (str (:token_type token) " " (:access_token token)))))
 
+(defn with-defaults
+ [params]
+ (update-in
+  params
+  [:query-params :count]
+  #(or % 100)))
+
 (defn -search!
  ([q] (-search! q nil))
  ([q params]
@@ -47,6 +54,7 @@
                    "https://api.twitter.com/1.1/search/tweets.json"
                    (-> params
                     (assoc-in [:query-params :q] q)
-                    with-auth!))]
+                    with-auth!
+                    with-defaults))]
    (parse-body response))))
 (def search! (memoize -search!))
