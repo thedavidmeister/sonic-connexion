@@ -7,7 +7,8 @@
    [cheshire "5.8.0"]
    [com.taoensso/timbre "4.10.0"]
    [environ "1.1.0"]
-   [funcool/cuerdas "2.0.5"]]
+   [funcool/cuerdas "2.0.5"]
+   [medley "1.0.0"]]
 
  :source-paths   #{"src"})
 

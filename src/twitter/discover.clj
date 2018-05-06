@@ -2,7 +2,8 @@
  (:require
   twitter.api
   twitter.tweet
-  cuerdas.core))
+  cuerdas.core
+  medley.core))
 
 (defn q->tweets!
  [q]
@@ -92,7 +93,7 @@
   (clojure.pprint/pprint
    (map
     row-fn
-    (sort-fn tweets)))))
+    (sort-fn (medley.core/distinct-by :id tweets))))))
 
 (defn user-report!
  [username]
