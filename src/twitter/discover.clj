@@ -11,30 +11,44 @@
  [& qs]
  (q->tweets! (clojure.string/join " OR " (flatten qs))))
 
+(defn normalize-hashtag
+ [hashtag]
+ (clojure.string/lower-case hashtag))
+
+(def tweet->hashtags
+ (comp
+  (partial map (comp normalize-hashtag :text))
+  :hashtags
+  :entities))
+
+(defn tweets->hashtags
+ [tweets]
+ (flatten (map tweet->hashtags tweets)))
+
 (defn hashtag->tweets!
  [hashtag]
  (q->tweets! (str "#" hashtag)))
 
 (defn hashtags-for-hashtag!
  [hashtag]
- (twitter.tweet/tweets->hashtags
+ (tweets->hashtags
   (hashtag->tweets! hashtag)))
 
 (defn hashtags-for-hashtags!
  ([hashtags]
-  (apply clojure.set/union (pmap hashtags-for-hashtag! hashtags)))
+  (pmap hashtags-for-hashtag! hashtags))
  ([hashtags depth]
   (loop [hs hashtags
          i 0]
    (if (< i depth)
     (recur
-     (hashtags-for-hashtags! hs)
+     (flatten (hashtags-for-hashtags! hs))
      (inc i))
-    hs))))
+    (flatten hs)))))
 
 (defn hashtags-for-user!
  [username]
- (twitter.tweet/tweets->hashtags
+ (tweets->hashtags
   (qs->tweets!
    (map
     #(str % username)
@@ -43,6 +57,9 @@
 (defn user->tweets!
  [username depth]
  (let [hs (hashtags-for-user! username)
-       hs' (hashtags-for-hashtags! hs depth)]
-  ; (pmap hashtag->tweets! hs')))
-  hs'))
+       hs' (hashtags-for-hashtags! hs depth)
+       multiples-only
+       (remove
+        #(= 1 (val %))
+        (frequencies hs'))]
+  (pmap hashtag->tweets! (map key multiples-only))))

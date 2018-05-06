@@ -46,7 +46,8 @@
   params
   :query-params
   #(merge
-    {:count 100}
+    {:count 100
+     :lang "en"}
     %)))
 
 (defn -search!
