@@ -12,6 +12,18 @@
  (twitter.tweet/tweets->hashtags
   (q->tweets! (str "#" hashtag))))
 
+(defn hashtags-for-hashtags!
+ ([hashtags]
+  (apply clojure.set/union (pmap hashtags-for-hashtag! hashtags)))
+ ([hashtags depth]
+  (loop [hs hashtags
+         i 0]
+   (if (< i depth)
+    (recur
+     (hashtags-for-hashtags! hs)
+     (inc i))
+    hs))))
+
 (defn hashtags-for-user!
  [username]
  (twitter.tweet/tweets->hashtags
