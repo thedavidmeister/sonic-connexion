@@ -53,7 +53,7 @@
  ([q] (-search! q nil))
  ([q params]
   (let [response @(org.httpkit.client/get
-                   "https://api.twitter.com/1.1/search/tweets.json"
+                   twitter.data/search-url
                    (-> params
                     (assoc-in [:query-params :q] q)
                     with-auth!

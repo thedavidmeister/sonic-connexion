@@ -3,10 +3,13 @@
   twitter.api
   twitter.tweet))
 
-(defn for-user!
+(defn hashtags-for-user!
  [username]
- (let [user-tweets
-       (:statuses
-        (twitter.api/search! username))
-       user-hashtags (twitter.tweet/tweets->hashtags user-tweets)]
-  user-hashtags))
+ (twitter.tweet/tweets->hashtags
+  (:statuses
+   (twitter.api/search!
+    (clojure.string/join
+     " OR "
+     (map
+      #(str % username)
+      ["from:" "to" "@"]))))))
