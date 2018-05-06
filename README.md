@@ -17,7 +17,8 @@ Need to provide twitter key/secret in `.lein-env` as per environ like:
 
 ## User -> Interesting tweets
 
-Find tweets that might be interesting to a user.
+Find tweets that might be interesting to a user, based on hashtags in their
+timeline.
 
 ```clojure
 (twitter.discover/user-report! "thedavidmeister")
