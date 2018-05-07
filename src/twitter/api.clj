@@ -11,7 +11,12 @@
 (defn check-200-status
  [response]
  (when-not (= 200 (:status response))
-  (taoensso.timbre/error (:status response) (:body response))))
+  ; we throw so that errors are not memoized
+  (throw
+   (Exception.
+    (str
+     (pr-str (:status response))
+     (pr-str (:body response)))))))
 
 (defn parse-body
  [response]

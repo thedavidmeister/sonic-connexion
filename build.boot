@@ -27,3 +27,12 @@
 (deftask repl-client
  []
  (repl :client true))
+
+; Convenience wrappers
+
+(require
+ 'twitter.discover)
+
+(deftask user-report
+ [u user USER str "the twitter user to run a report for"]
+ (twitter.discover/user-report! user))
